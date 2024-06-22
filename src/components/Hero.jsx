@@ -1,5 +1,3 @@
-
-
 import { logo } from "../assets";
 const Hero = () => {
   return (
@@ -9,10 +7,12 @@ const Hero = () => {
 
         <button
           type="button"
-          onClick={() => window.open("https://rapidapi.com/hub")}
+          onClick={() =>
+            window.open("https://github.com/LeonidShamarin/AI-summarizer")
+          }
           className="black_btn"
         >
-          Powered by RapidAPI
+          GitHub
         </button>
       </nav>
       <h1 className="head_text">

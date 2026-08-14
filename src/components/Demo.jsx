@@ -132,10 +132,11 @@ const Demo = () => {
           <img src={loader} alt="loader" className="w-20 h-20 object-contain" />
         ) : error ? (
           <p className="font-inter font-bold text-black text-center">
-            Well, that wasnt supposed to happen...
+            Well, that wasn&apos;t supposed to happen...
             <br />
             <span className="font-satoshi font-normal text-gray-700">
-              {error?.data?.error}
+              {error?.data?.error ??
+                "The summarizer could not be reached. Please try again."}
             </span>
           </p>
         ) : (

@@ -17,7 +17,7 @@ browser ──POST /api/summarize {url}──►  Vercel function
                                             │
                                             ├─► r.jina.ai  : extracts the article text
                                             │
-                                            └─► Groq       : llama-3.3-70b-versatile
+                                            └─► Groq       : openai/gpt-oss-120b
                                                               returns the summary
 ```
 

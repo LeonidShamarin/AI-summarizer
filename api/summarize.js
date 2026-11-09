@@ -3,7 +3,8 @@
  *
  * Дві сторонні залежності, обидві безкоштовні:
  *   r.jina.ai  — витягує читабельний текст статті, ключа не потребує;
- *   Groq       — сумаризує, llama-3.3-70b-versatile, ~14 400 запитів на добу.
+ *   Groq       — сумаризує, openai/gpt-oss-120b (llama-3.3-70b-versatile Groq
+ *                прибрав у листопаді 2026).
  *
  * Ключ читається з оточення і живе тільки тут. У попередній версії він був
  * VITE_-змінною, тобто вкомпільовувався у клієнтський бандл і був видимий
@@ -15,7 +16,14 @@
 // ключі2.txt в останню чергу; відсутні пропускаються, дублі (провайдер, ключ)
 // згортаються. Мертвий ключ або вичерпана квота на одному -> беремо наступний.
 const PROVIDERS = {
-  groq: { url: "https://api.groq.com/openai/v1/chat/completions", model: "llama-3.3-70b-versatile" },
+  // gpt-oss спершу «думає», і ці токени рахуються в max_tokens: на статті 24k
+  // символів зі стандартним рівнем це 341 з 400, з "low" — 181. Поле шлемо лише
+  // в Groq: інші провайдери його не приймають.
+  groq: {
+    url: "https://api.groq.com/openai/v1/chat/completions",
+    model: "openai/gpt-oss-120b",
+    extra: { reasoning_effort: "low" },
+  },
   gemini: { url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", model: "gemini-3.5-flash-lite" },
   openai: { url: "https://api.openai.com/v1/chat/completions", model: "gpt-4o-mini" },
   xai: { url: "https://api.x.ai/v1/chat/completions", model: "grok-2-latest" },
@@ -39,7 +47,8 @@ function providerChain(primaryGroqKey, env = process.env) {
     const k = (key ?? "").trim();
     if (k === "" || seen.has(`${provider}:${k}`)) return;
     seen.add(`${provider}:${k}`);
-    out.push({ label, url: PROVIDERS[provider].url, model: PROVIDERS[provider].model, apiKey: k });
+    const { url, model, extra = {} } = PROVIDERS[provider];
+    out.push({ label, url, model, extra, apiKey: k });
   };
   add("groq", "groq:primary", primaryGroqKey);
   for (const [provider, v] of CHAIN_VARS) add(provider, `${provider}:${v}`, env[v]);
@@ -137,7 +146,9 @@ async function summarize(articleText, chain) {
       response = await fetch(p.url, {
         method: "POST",
         headers: { Authorization: `Bearer ${p.apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ model: p.model, temperature: 0.2, max_tokens: 400, messages }),
+        body: JSON.stringify({
+          model: p.model, temperature: 0.2, max_tokens: 400, messages, ...(p.extra || {}),
+        }),
         signal: AbortSignal.timeout(30000),
       });
     } catch (err) {

@@ -17,7 +17,7 @@
                                             │
                                             ├─► r.jina.ai  — витягує текст статті
                                             │
-                                            └─► Groq       — llama-3.3-70b-versatile
+                                            └─► Groq       — openai/gpt-oss-120b
                                                               віддає переказ
 ```
 

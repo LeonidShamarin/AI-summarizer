@@ -26,7 +26,7 @@ const PROVIDERS = {
   },
   gemini: { url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", model: "gemini-3.5-flash-lite" },
   openai: { url: "https://api.openai.com/v1/chat/completions", model: "gpt-4o-mini" },
-  xai: { url: "https://api.x.ai/v1/chat/completions", model: "grok-2-latest" },
+  xai: { url: "https://api.x.ai/v1/chat/completions", model: "grok-4.20-0309-non-reasoning" },
 };
 
 // (провайдер, env-змінна) у порядку ланцюжка; `primaryGroqKey` стає першим.
